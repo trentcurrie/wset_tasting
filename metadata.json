@@ -1,0 +1,7 @@
+{
+  "name": "SommLog AI",
+  "description": "A professional wine tasting tracker based on the WSET Systematic Approach to Tasting (SAT), featuring AI-powered label recognition and structured calibration.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
