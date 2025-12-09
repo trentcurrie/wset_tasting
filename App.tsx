@@ -4,6 +4,7 @@ import { TastingCard } from './components/TastingCard';
 import { TastingDetail } from './components/TastingDetail';
 import { WineInsights } from './components/WineInsights';
 import { AromaReference } from './components/AromaReference';
+import { ThemeToggle } from './components/ThemeToggle';
 import { TastingNote } from './types';
 import { useTastings, FilterCategory } from './hooks';
 import { Plus, Search, Filter, Wine, BarChart3, List, Book, LogOut } from 'lucide-react';
@@ -73,7 +74,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas-warm pb-20 md:pb-0 md:pl-64 grid-overlay">
+    <div className="min-h-screen bg-canvas-warm dark:bg-stone-900 pb-20 md:pb-0 md:pl-64 grid-overlay">
       
       {/* Desktop Sidebar - Bauhaus-inspired with bold geometric accent */}
       <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-charcoal text-stone-100 z-20">
@@ -86,28 +87,40 @@ function App() {
         
         <div className="p-6 border-b border-stone-800">
           <h1 className="font-serif text-2xl font-bold text-white flex items-center gap-2">
-            <Wine className="text-vermillion" /> PourDecisions
+            <Wine className="text-vermillion" /> <span className="text-vermillion">Pour</span>Decisions
           </h1>
           <p className="text-xs text-stone-400 mt-1">Drink. Rate. Repeat.</p>
         </div>
         <nav className="flex-1 p-4 space-y-2">
           <button 
             onClick={() => setView(View.List)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${view === View.List ? 'bg-stone-800 text-white shadow-sm' : 'hover:bg-stone-800/50 hover:translate-x-1 text-stone-300'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative overflow-hidden group ${view === View.List ? 'bg-stone-800 text-white shadow-sm' : 'hover:bg-stone-800/50 text-stone-300'}`}
           >
-            <List size={20} /> My Tastings
+            <List size={20} className={view === View.List ? 'text-vermillion' : 'group-hover:text-vermillion transition-colors'} /> 
+            <span className="relative">
+              My Tastings
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-vermillion transition-all duration-200 ${view === View.List ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+            </span>
           </button>
           <button 
             onClick={() => setView(View.Stats)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${view === View.Stats ? 'bg-stone-800 text-white shadow-sm' : 'hover:bg-stone-800/50 hover:translate-x-1 text-stone-300'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative overflow-hidden group ${view === View.Stats ? 'bg-stone-800 text-white shadow-sm' : 'hover:bg-stone-800/50 text-stone-300'}`}
           >
-            <BarChart3 size={20} /> Insights
+            <BarChart3 size={20} className={view === View.Stats ? 'text-teal' : 'group-hover:text-teal transition-colors'} /> 
+            <span className="relative">
+              Insights
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-teal transition-all duration-200 ${view === View.Stats ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+            </span>
           </button>
           <button 
             onClick={() => setView(View.Reference)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${view === View.Reference ? 'bg-stone-800 text-white shadow-sm' : 'hover:bg-stone-800/50 hover:translate-x-1 text-stone-300'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative overflow-hidden group ${view === View.Reference ? 'bg-stone-800 text-white shadow-sm' : 'hover:bg-stone-800/50 text-stone-300'}`}
           >
-            <Book size={20} /> Aroma Guide
+            <Book size={20} className={view === View.Reference ? 'text-vine' : 'group-hover:text-vine transition-colors'} /> 
+            <span className="relative">
+              Aroma Guide
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-vine transition-all duration-200 ${view === View.Reference ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+            </span>
           </button>
           <button 
             onClick={() => setView(View.Add)}
@@ -117,8 +130,12 @@ function App() {
           </button>
         </nav>
         
-        {/* Logout button at bottom of sidebar */}
-        <div className="p-4 border-t border-stone-800">
+        {/* Theme toggle and Logout at bottom of sidebar */}
+        <div className="p-4 border-t border-stone-800 space-y-2">
+          <div className="flex items-center justify-between px-4 py-2">
+            <span className="text-sm text-stone-400">Theme</span>
+            <ThemeToggle />
+          </div>
           <button 
             onClick={signOut}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800/50 transition-all duration-200"
@@ -137,11 +154,14 @@ function App() {
           <div className="flex-1 bg-vine"></div>
         </div>
         <h1 className="font-serif text-xl font-bold flex items-center gap-2">
-           <Wine className="text-vermillion h-5 w-5" /> PourDecisions
+           <Wine className="text-vermillion h-5 w-5" /> <span className="text-vermillion">Pour</span>Decisions
         </h1>
-        <button onClick={() => setView(View.Add)} className="bg-vermillion p-2.5 rounded-full hover:bg-vermillion/80 active:scale-95 transition-all shadow-lg">
-          <Plus size={20} />
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button onClick={() => setView(View.Add)} className="bg-vermillion p-2.5 rounded-full hover:bg-vermillion/80 active:scale-95 transition-all shadow-lg">
+            <Plus size={20} />
+          </button>
+        </div>
       </header>
 
       {/* Main Content */}
@@ -160,7 +180,7 @@ function App() {
         )}
 
         {view === View.Detail && selectedNote && (
-          <div className="fixed inset-0 md:left-64 bg-canvas-warm z-40 overflow-auto p-4 md:p-8 animate-in fade-in duration-200">
+          <div className="fixed inset-0 md:left-64 bg-canvas-warm dark:bg-stone-900 z-40 overflow-auto p-4 md:p-8 animate-in fade-in duration-200">
             <TastingDetail 
               note={selectedNote} 
               onEdit={handleEditFromDetail} 
@@ -170,7 +190,7 @@ function App() {
         )}
 
         {view === View.Reference && (
-          <div className="fixed inset-0 md:left-64 bg-canvas-warm z-40 overflow-auto animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="fixed inset-0 md:left-64 bg-canvas-warm dark:bg-stone-900 z-40 overflow-auto animate-in fade-in slide-in-from-right-4 duration-300">
             <AromaReference onClose={() => setView(View.List)} />
           </div>
         )}
@@ -178,8 +198,8 @@ function App() {
         {view === View.Stats && (
           <>
             <header className="mb-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <h2 className="font-serif text-3xl font-bold text-charcoal">Cellar Analytics</h2>
-              <p className="text-stone-500">Visualize your tasting history and palate preferences.</p>
+              <h2 className="font-serif text-3xl font-bold text-charcoal dark:text-stone-100">Cellar Analytics</h2>
+              <p className="text-stone-500 dark:text-stone-400">Visualize your tasting history and palate preferences.</p>
             </header>
             <WineInsights notes={tastings} />
           </>
@@ -190,8 +210,8 @@ function App() {
             <header className={`mb-6 ${view === View.Stats ? 'mt-12' : ''}`}>
               <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 mb-6">
                  <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-                   <h2 className="font-serif text-3xl font-bold text-charcoal">Recent Tastings</h2>
-                   <p className="text-stone-500">{totalCount} notes in your log</p>
+                   <h2 className="font-serif text-3xl font-bold text-charcoal dark:text-stone-100">Recent Tastings</h2>
+                   <p className="text-stone-500 dark:text-stone-400">{totalCount} notes in your log</p>
                  </div>
                  {view !== View.Stats && (
                    <button 
@@ -204,7 +224,7 @@ function App() {
               </div>
 
               {/* Search & Filter Toolbar */}
-              <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-sm flex flex-col sm:flex-row gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 delay-100">
+              <div className="bg-white dark:bg-stone-800 p-3 rounded-xl border border-stone-200 dark:border-stone-700 shadow-sm flex flex-col sm:flex-row gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 delay-100">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 h-4 w-4" />
                   <input 
@@ -212,7 +232,7 @@ function App() {
                     placeholder="Search wines, producers, grapes..." 
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2.5 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all"
+                    className="w-full pl-9 pr-4 py-2.5 text-sm border border-stone-200 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-700 text-charcoal dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all"
                   />
                 </div>
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
@@ -227,7 +247,7 @@ function App() {
                           : c === 'White' ? 'bg-sun text-charcoal shadow-sm' 
                           : c === 'Rose' ? 'bg-tangerine text-white shadow-sm'
                           : 'bg-charcoal text-white shadow-sm'
-                          : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-charcoal'
+                          : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 hover:text-charcoal dark:hover:text-white'
                       }`}
                     >
                       {c}
@@ -239,9 +259,9 @@ function App() {
 
             <div className="space-y-4">
               {filteredTastings.length === 0 ? (
-                <div className="text-center py-16 text-stone-400 bg-white rounded-xl border-2 border-stone-200 border-dashed animate-in fade-in duration-300">
+                <div className="text-center py-16 text-stone-400 bg-white dark:bg-stone-800 rounded-xl border-2 border-stone-200 dark:border-stone-700 border-dashed animate-in fade-in duration-300">
                   <Wine className="h-16 w-16 mx-auto mb-4 opacity-30" />
-                  <p className="text-lg font-medium text-stone-500">No wines found</p>
+                  <p className="text-lg font-medium text-stone-500 dark:text-stone-400">No wines found</p>
                   <p className="text-sm mt-1">Try adjusting your search or filters</p>
                 </div>
               ) : (

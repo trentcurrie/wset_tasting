@@ -4,7 +4,7 @@ import {
   TastingType
 } from '../types';
 import { compressImage } from '../utils';
-import { searchDescriptors, getCategoryForDescriptor } from '../constants/wsatAromas';
+import { searchDescriptors, getCategoryForDescriptor, getDescriptorColor } from '../constants/wsatAromas';
 import { Loader2, Sparkles, ChevronRight, ChevronLeft, Check, Camera, Upload, X, Zap, BookOpen } from 'lucide-react';
 
 interface Props {
@@ -16,11 +16,11 @@ interface Props {
 // Helpers for Select inputs
 const SelectField = ({ label, value, options, onChange }: { label: string, value: string, options: string[], onChange: (val: string) => void }) => (
   <div className="mb-4">
-    <label className="block text-sm font-medium text-stone-600 mb-1">{label}</label>
+    <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">{label}</label>
     <select 
       value={value} 
       onChange={(e) => onChange(e.target.value)}
-      className="w-full p-2 border border-stone-200 rounded-md bg-white focus:ring-2 focus:ring-teal focus:border-teal transition-colors"
+      className="w-full p-2 border border-stone-200 dark:border-stone-600 rounded-md bg-white dark:bg-stone-700 text-charcoal dark:text-stone-100 focus:ring-2 focus:ring-teal focus:border-teal transition-colors"
     >
       {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
     </select>
@@ -45,18 +45,25 @@ const TagInput = ({ label, tags, onChange }: { label: string, tags: string[], on
     onChange(tags.filter((_, i) => i !== index));
   };
 
+  const getChipColors = (tag: string) => {
+    const colors = getDescriptorColor(tag);
+    if (colors) {
+      return `${colors.bg} ${colors.text} border ${colors.border}`;
+    }
+    // Custom descriptor - use teal
+    return 'bg-teal/15 text-teal border border-teal/30';
+  };
+
   return (
     <div className="mb-4 relative">
-      <label className="block text-sm font-medium text-stone-600 mb-1">{label}</label>
-      <div className="flex flex-wrap gap-2 p-2 border border-stone-200 rounded-lg bg-white min-h-[44px]">
+      <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">{label}</label>
+      <div className="flex flex-wrap gap-2 p-2 border border-stone-200 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-700 min-h-[44px]">
         {tags.map((tag, index) => {
           const category = getCategoryForDescriptor(tag);
           return (
             <span 
               key={index} 
-              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium ${
-                category ? 'bg-teal/15 text-teal border border-teal/30' : 'bg-tangerine/15 text-tangerine border border-tangerine/30'
-              }`}
+              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium ${getChipColors(tag)}`}
               title={category || 'Custom descriptor'}
             >
               {tag}
@@ -82,25 +89,30 @@ const TagInput = ({ label, tags, onChange }: { label: string, tags: string[], on
             }
           }}
           placeholder={tags.length === 0 ? "Type or select descriptors..." : ""}
-          className="flex-1 min-w-[120px] outline-none text-sm bg-transparent"
+          className="flex-1 min-w-[120px] outline-none text-sm bg-transparent text-charcoal dark:text-stone-100 placeholder-stone-400"
         />
       </div>
       
       {/* Suggestions dropdown */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-20 mt-1 w-full bg-white border border-stone-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-          {suggestions.map(suggestion => (
-            <button
-              key={suggestion}
-              type="button"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => addTag(suggestion)}
-              className="w-full px-3 py-2 text-left text-sm hover:bg-teal/10 flex items-center justify-between transition-colors"
-            >
-              <span>{suggestion}</span>
-              <span className="text-xs text-stone-400">{getCategoryForDescriptor(suggestion)?.split(' › ')[1]}</span>
-            </button>
-          ))}
+        <div className="absolute z-20 mt-1 w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 rounded-lg shadow-lg max-h-48 overflow-auto">
+          {suggestions.map(suggestion => {
+            const colors = getDescriptorColor(suggestion);
+            return (
+              <button
+                key={suggestion}
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => addTag(suggestion)}
+                className="w-full px-3 py-2 text-left text-sm hover:bg-stone-100 dark:hover:bg-stone-700 flex items-center justify-between transition-colors"
+              >
+                <span className="text-charcoal dark:text-stone-100">{suggestion}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded ${colors ? `${colors.bg} ${colors.text}` : 'text-stone-400'}`}>
+                  {getCategoryForDescriptor(suggestion)?.split(' › ')[1]}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
       
@@ -169,11 +181,11 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       
       {/* Mode Toggle */}
-      <div className="flex bg-stone-100 p-1 rounded-lg mb-6">
+      <div className="flex bg-stone-100 dark:bg-stone-700 p-1 rounded-lg mb-6">
         <button
           onClick={() => switchMode('Quick')}
           className={`flex-1 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
-            isQuickMode ? 'bg-white text-charcoal shadow-sm' : 'text-stone-500 hover:text-stone-700'
+            isQuickMode ? 'bg-white dark:bg-stone-600 text-charcoal dark:text-stone-100 shadow-sm' : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
           }`}
         >
           <Zap size={16} className={isQuickMode ? 'text-tangerine' : ''} /> Quick Log
@@ -181,7 +193,7 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
         <button
           onClick={() => switchMode('Full')}
           className={`flex-1 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${
-            !isQuickMode ? 'bg-white text-charcoal shadow-sm' : 'text-stone-500 hover:text-stone-700'
+            !isQuickMode ? 'bg-white dark:bg-stone-600 text-charcoal dark:text-stone-100 shadow-sm' : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
           }`}
         >
           <BookOpen size={16} className={!isQuickMode ? 'text-teal' : ''} /> Full Tasting
@@ -192,7 +204,7 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
       <div 
         onClick={() => fileInputRef.current?.click()}
         className={`relative w-full h-48 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors overflow-hidden ${
-          formData.imageUrl ? 'border-teal/30 bg-stone-50' : 'border-stone-300 hover:border-teal hover:bg-stone-50'
+          formData.imageUrl ? 'border-teal/30 bg-stone-50 dark:bg-stone-700' : 'border-stone-300 dark:border-stone-600 hover:border-teal hover:bg-stone-50 dark:hover:bg-stone-700'
         }`}
       >
         <input 
@@ -208,7 +220,7 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
           <>
             <img src={formData.imageUrl} alt="Wine Label" className="h-full w-full object-cover opacity-50" />
             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-               <span className="bg-white/90 text-stone-800 px-4 py-2 rounded-full text-sm font-medium shadow-lg flex items-center gap-2">
+               <span className="bg-white/90 dark:bg-stone-800/90 text-stone-800 dark:text-stone-100 px-4 py-2 rounded-full text-sm font-medium shadow-lg flex items-center gap-2">
                  <Camera size={16} /> Retake Photo
                </span>
             </div>
@@ -218,73 +230,73 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
              <div className="bg-teal/10 text-teal p-3 rounded-full inline-block mb-2">
                <Camera size={24} />
              </div>
-             <p className="text-stone-600 font-medium">Take a photo of the label</p>
+             <p className="text-stone-600 dark:text-stone-300 font-medium">Take a photo of the label</p>
              <p className="text-stone-400 text-xs mt-1">AI will extract name, vintage & producer</p>
           </div>
         )}
 
         {isAnalyzing && (
-          <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
+          <div className="absolute inset-0 bg-white/80 dark:bg-stone-900/80 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
             <Loader2 className="animate-spin text-teal h-8 w-8 mb-2" />
-            <p className="text-charcoal font-medium animate-pulse">Analyzing Label...</p>
+            <p className="text-charcoal dark:text-stone-100 font-medium animate-pulse">Analyzing Label...</p>
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <label className="block text-sm font-medium text-stone-600">Wine Name</label>
+          <label className="block text-sm font-medium text-stone-600 dark:text-stone-400">Wine Name</label>
           <input 
             type="text" 
             value={formData.name} 
             onChange={e => setFormData({...formData, name: e.target.value})}
-            className="w-full p-2 border border-stone-200 rounded-md mt-1"
+            className="w-full p-2 border border-stone-200 dark:border-stone-600 rounded-md mt-1 bg-white dark:bg-stone-700 text-charcoal dark:text-stone-100"
             placeholder="e.g. Chateau Margaux"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-600">Vintage</label>
+          <label className="block text-sm font-medium text-stone-600 dark:text-stone-400">Vintage</label>
           <input 
             type="text" 
             value={formData.vintage} 
             onChange={e => setFormData({...formData, vintage: e.target.value})}
-            className="w-full p-2 border border-stone-200 rounded-md mt-1"
+            className="w-full p-2 border border-stone-200 dark:border-stone-600 rounded-md mt-1 bg-white dark:bg-stone-700 text-charcoal dark:text-stone-100"
             placeholder="e.g. 2015"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-600">Producer</label>
+          <label className="block text-sm font-medium text-stone-600 dark:text-stone-400">Producer</label>
           <input 
             type="text" 
             value={formData.producer} 
             onChange={e => setFormData({...formData, producer: e.target.value})}
-            className="w-full p-2 border border-stone-200 rounded-md mt-1"
+            className="w-full p-2 border border-stone-200 dark:border-stone-600 rounded-md mt-1 bg-white dark:bg-stone-700 text-charcoal dark:text-stone-100"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-600">Country</label>
+          <label className="block text-sm font-medium text-stone-600 dark:text-stone-400">Country</label>
           <input 
             type="text" 
             value={formData.country} 
             onChange={e => setFormData({...formData, country: e.target.value})}
-            className="w-full p-2 border border-stone-200 rounded-md mt-1"
+            className="w-full p-2 border border-stone-200 dark:border-stone-600 rounded-md mt-1 bg-white dark:bg-stone-700 text-charcoal dark:text-stone-100"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-600">Region</label>
+          <label className="block text-sm font-medium text-stone-600 dark:text-stone-400">Region</label>
           <input 
             type="text" 
             value={formData.region} 
             onChange={e => setFormData({...formData, region: e.target.value})}
-            className="w-full p-2 border border-stone-200 rounded-md mt-1"
+            className="w-full p-2 border border-stone-200 dark:border-stone-600 rounded-md mt-1 bg-white dark:bg-stone-700 text-charcoal dark:text-stone-100"
           />
         </div>
         
         {/* Quick Mode Additional Fields directly here */}
         {isQuickMode && (
-          <div className="col-span-2 space-y-4 pt-4 border-t border-stone-100 mt-2">
+          <div className="col-span-2 space-y-4 pt-4 border-t border-stone-100 dark:border-stone-600 mt-2">
             <div>
-               <label className="block text-sm font-medium text-stone-600 mb-1">Your Rating (0-100)</label>
+               <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Your Rating (0-100)</label>
                <div className="flex items-center gap-4">
                  <input 
                     type="range" 
@@ -292,19 +304,19 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
                     max="100" 
                     value={formData.conclusion.personalRating}
                     onChange={(e) => updateField('conclusion', 'personalRating', parseInt(e.target.value))}
-                    className="flex-1 accent-vermillion h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer"
+                    className="flex-1 accent-vermillion h-2 bg-stone-200 dark:bg-stone-600 rounded-lg appearance-none cursor-pointer"
                  />
-                 <span className="font-serif font-bold text-2xl text-charcoal w-12 text-center">
+                 <span className="font-serif font-bold text-2xl text-charcoal dark:text-stone-100 w-12 text-center">
                    {formData.conclusion.personalRating}
                  </span>
                </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-stone-600 mb-1">Notes</label>
+              <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Notes</label>
               <textarea 
                 value={formData.conclusion.notes}
                 onChange={e => updateField('conclusion', 'notes', e.target.value)}
-                className="w-full p-2 border border-stone-200 rounded-md h-24"
+                className="w-full p-2 border border-stone-200 dark:border-stone-600 rounded-md h-24 bg-white dark:bg-stone-700 text-charcoal dark:text-stone-100"
                 placeholder="What did you think?"
               />
             </div>
@@ -451,7 +463,7 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[85vh] w-full max-w-2xl mx-auto">
+    <div className="bg-white dark:bg-stone-800 rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[85vh] w-full max-w-2xl mx-auto">
       {/* Header */}
       <div className="bg-charcoal p-4 flex justify-between items-center text-white">
         <h2 className="font-serif text-lg font-semibold flex items-center gap-2">
@@ -462,15 +474,15 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
 
       {/* Progress Bar (Only for Full Mode) */}
       {!isQuickMode && (
-        <div className="flex bg-stone-100 border-b border-stone-200">
+        <div className="flex bg-stone-100 dark:bg-stone-700 border-b border-stone-200 dark:border-stone-600">
           {steps.map((s, idx) => (
             <button 
               key={idx} 
               type="button"
               onClick={() => setStep(idx)}
-              className={`flex-1 py-3 flex justify-center items-center border-b-2 transition-all cursor-pointer hover:bg-stone-50 ${
-                step === idx ? 'border-vermillion text-charcoal font-medium bg-white' : 
-                step > idx ? 'border-vine text-vine hover:text-vine/80' : 'border-transparent text-stone-400 hover:text-stone-600'
+              className={`flex-1 py-3 flex justify-center items-center border-b-2 transition-all cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-600 ${
+                step === idx ? 'border-vermillion text-charcoal dark:text-stone-100 font-medium bg-white dark:bg-stone-800' : 
+                step > idx ? 'border-vine text-vine hover:text-vine/80' : 'border-transparent text-stone-400 hover:text-stone-600 dark:hover:text-stone-300'
               }`}
             >
                <span className="hidden sm:inline text-xs uppercase tracking-wide">{s.title}</span>
@@ -486,11 +498,11 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
       </div>
 
       {/* Footer Buttons */}
-      <div className="p-4 border-t border-stone-200 bg-stone-50 flex justify-between">
+      <div className="p-4 border-t border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 flex justify-between">
         <button 
           onClick={() => setStep(Math.max(0, step - 1))}
           disabled={step === 0}
-          className={`px-4 py-2 rounded-md border border-stone-300 text-stone-600 disabled:opacity-50 hover:bg-stone-100 flex items-center gap-1 ${isQuickMode ? 'invisible' : ''}`}
+          className={`px-4 py-2 rounded-md border border-stone-300 dark:border-stone-600 text-stone-600 dark:text-stone-300 disabled:opacity-50 hover:bg-stone-100 dark:hover:bg-stone-600 flex items-center gap-1 ${isQuickMode ? 'invisible' : ''}`}
         >
           <ChevronLeft size={16} /> Back
         </button>

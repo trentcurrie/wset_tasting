@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" class="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: ['selector', '[data-theme="dark"]'],
         theme: {
           extend: {
             fontFamily: {
@@ -97,6 +98,24 @@
           linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
         background-size: 40px 40px;
       }
+      
+      [data-theme="dark"] .grid-overlay {
+        background-image: 
+          linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      }
+      
+      /* Smooth theme transitions */
+      * {
+        transition-property: background-color, border-color, color;
+        transition-duration: 150ms;
+        transition-timing-function: ease;
+      }
+      
+      /* Exclude animations and transforms from theme transitions */
+      *:not([class*="transition-"]) {
+        transition-property: background-color, border-color, color;
+      }
     </style>
   <script type="importmap">
 {
@@ -111,7 +130,7 @@
 }
 </script>
 </head>
-  <body class="bg-canvas-warm text-charcoal font-sans antialiased">
+  <body class="bg-canvas-warm dark:bg-stone-900 text-charcoal dark:text-stone-100 font-sans antialiased">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

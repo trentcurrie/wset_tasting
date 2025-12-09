@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, X, Leaf, Beaker, Clock } from 'lucide-react';
-import { ALL_AROMA_CATEGORIES, searchDescriptors } from '../constants/wsatAromas';
+import { ALL_AROMA_CATEGORIES, searchDescriptors, getDescriptorColor } from '../constants/wsatAromas';
 
 interface Props {
   onClose?: () => void;
@@ -47,7 +47,7 @@ export const AromaReference: React.FC<Props> = ({ onClose }) => {
     : ALL_AROMA_CATEGORIES;
 
   return (
-    <div className="h-full flex flex-col bg-canvas-warm">
+    <div className="h-full flex flex-col bg-canvas-warm dark:bg-stone-900">
       {/* Header */}
       <header className="bg-charcoal text-white p-4 md:p-6 flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
@@ -97,14 +97,17 @@ export const AromaReference: React.FC<Props> = ({ onClose }) => {
           <div className="mb-6 p-4 bg-teal/10 border border-teal/30 rounded-lg">
             <h3 className="text-sm font-medium text-teal mb-2">Quick Results</h3>
             <div className="flex flex-wrap gap-2">
-              {searchResults.map(descriptor => (
-                <span
-                  key={descriptor}
-                  className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-sm font-medium text-charcoal shadow-sm"
-                >
-                  {descriptor}
-                </span>
-              ))}
+              {searchResults.map(descriptor => {
+                const colors = getDescriptorColor(descriptor);
+                return (
+                  <span
+                    key={descriptor}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium shadow-sm ${colors ? `${colors.bg} ${colors.text} border ${colors.border}` : 'bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-charcoal dark:text-stone-100'}`}
+                  >
+                    {descriptor}
+                  </span>
+                );
+              })}
             </div>
           </div>
         )}
@@ -112,7 +115,7 @@ export const AromaReference: React.FC<Props> = ({ onClose }) => {
         {/* Categories Grid */}
         <div className="space-y-6">
           {filteredCategories.map(category => (
-            <div key={category.name} className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-sm">
+            <div key={category.name} className="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 overflow-hidden shadow-sm">
               {/* Category Header */}
               <button
                 onClick={() => toggleCategory(category.name)}
@@ -128,23 +131,28 @@ export const AromaReference: React.FC<Props> = ({ onClose }) => {
               {/* Subcategories */}
               {expandedCategories.includes(category.name) && (
                 <div className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {category.subcategories.map(sub => (
-                    <div key={sub.name} className="space-y-2">
-                      <h4 className="font-medium text-charcoal text-sm border-b border-stone-200 pb-1">
-                        {sub.name}
-                      </h4>
-                      <div className="flex flex-wrap gap-1.5">
-                        {sub.descriptors.map(descriptor => (
-                          <span
-                            key={descriptor}
-                            className="px-2 py-1 bg-stone-100 hover:bg-stone-200 rounded text-xs text-stone-700 cursor-default transition-colors"
-                          >
-                            {descriptor}
-                          </span>
-                        ))}
+                  {category.subcategories.map(sub => {
+                    return (
+                      <div key={sub.name} className="space-y-2">
+                        <h4 className="font-medium text-charcoal dark:text-stone-100 text-sm border-b border-stone-200 dark:border-stone-600 pb-1">
+                          {sub.name}
+                        </h4>
+                        <div className="flex flex-wrap gap-1.5">
+                          {sub.descriptors.map(descriptor => {
+                            const colors = getDescriptorColor(descriptor);
+                            return (
+                              <span
+                                key={descriptor}
+                                className={`px-2 py-1 rounded text-xs cursor-default transition-colors hover:opacity-80 ${colors ? `${colors.bg} ${colors.text} border ${colors.border}` : 'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300'}`}
+                              >
+                                {descriptor}
+                              </span>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { TastingNote } from '../types';
 import { getQualityInitial } from '../utils';
+import { getDescriptorColor } from '../constants/wsatAromas';
 import { X, Edit3, MapPin, Calendar, Droplet, Wine, Eye, Wind, Grape, Award } from 'lucide-react';
 
 interface Props {
@@ -26,7 +27,7 @@ const Section = ({ title, icon: Icon, children, color = 'teal', delay = 0 }: {
   
   return (
     <div 
-      className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 animate-in fade-in slide-in-from-bottom-2"
+      className="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 animate-in fade-in slide-in-from-bottom-2"
       style={{ animationDelay: `${delay}ms`, animationFillMode: 'backwards' }}
     >
       <div className={`px-4 py-2.5 border-b ${colorClasses[color]} flex items-center gap-2`}>
@@ -38,21 +39,35 @@ const Section = ({ title, icon: Icon, children, color = 'teal', delay = 0 }: {
   );
 };
 
-const Tag = ({ children, variant = 'default' }: { children: React.ReactNode; variant?: 'default' | 'highlight' }) => (
-  <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium transition-transform hover:scale-105 cursor-default ${
-    variant === 'highlight' 
-      ? 'bg-teal/15 text-teal border border-teal/30' 
-      : 'bg-stone-100 text-stone-600'
-  }`}>
-    {children}
-  </span>
-);
+const Tag = ({ children, variant = 'default' }: { children: React.ReactNode; variant?: 'default' | 'highlight' }) => {
+  // Get descriptor-specific colors if it's a highlight tag (aroma descriptor)
+  const descriptor = typeof children === 'string' ? children : null;
+  const colors = descriptor ? getDescriptorColor(descriptor) : null;
+  
+  if (variant === 'highlight' && colors) {
+    return (
+      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium transition-transform hover:scale-105 cursor-default ${colors.bg} ${colors.text} border ${colors.border}`}>
+        {children}
+      </span>
+    );
+  }
+  
+  return (
+    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium transition-transform hover:scale-105 cursor-default ${
+      variant === 'highlight' 
+        ? 'bg-teal/15 text-teal border border-teal/30' 
+        : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
+    }`}>
+      {children}
+    </span>
+  );
+};
 
 const InfoRow = ({ label, value }: { label: string; value: string | number | undefined }) => (
   value ? (
-    <div className="flex justify-between py-2 border-b border-stone-100 last:border-0 group">
-      <span className="text-stone-500 text-sm">{label}</span>
-      <span className="text-charcoal font-medium text-sm group-hover:text-teal transition-colors">{value}</span>
+    <div className="flex justify-between py-2 border-b border-stone-100 dark:border-stone-700 last:border-0 group">
+      <span className="text-stone-500 dark:text-stone-400 text-sm">{label}</span>
+      <span className="text-charcoal dark:text-stone-100 font-medium text-sm group-hover:text-teal transition-colors">{value}</span>
     </div>
   ) : null
 );
@@ -78,7 +93,7 @@ export const TastingDetail: React.FC<Props> = ({ note, onClose, onEdit }) => {
   };
 
   return (
-    <div className="bg-canvas-warm rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] w-full max-w-3xl mx-auto animate-in fade-in zoom-in-95 duration-300">
+    <div className="bg-canvas-warm dark:bg-stone-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] w-full max-w-3xl mx-auto animate-in fade-in zoom-in-95 duration-300">
       {/* Header */}
       <div className="bg-charcoal relative">
         {/* Top bar with buttons */}
@@ -173,8 +188,8 @@ export const TastingDetail: React.FC<Props> = ({ note, onClose, onEdit }) => {
             <InfoRow label="Intensity" value={note.nose.intensity} />
             <InfoRow label="Development" value={note.nose.development} />
             {note.nose.characteristics.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-stone-100">
-                <p className="text-xs text-stone-500 mb-2">Aromas</p>
+              <div className="mt-3 pt-3 border-t border-stone-100 dark:border-stone-700">
+                <p className="text-xs text-stone-500 dark:text-stone-400 mb-2">Aromas</p>
                 <div className="flex flex-wrap gap-1.5">
                   {note.nose.characteristics.map((char, i) => (
                     <Tag key={i} variant="highlight">{char}</Tag>
@@ -195,8 +210,8 @@ export const TastingDetail: React.FC<Props> = ({ note, onClose, onEdit }) => {
               <InfoRow label="Finish" value={note.palate.finish} />
             </div>
             {note.palate.flavorCharacteristics.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-stone-100">
-                <p className="text-xs text-stone-500 mb-2">Flavors</p>
+              <div className="mt-3 pt-3 border-t border-stone-100 dark:border-stone-700">
+                <p className="text-xs text-stone-500 dark:text-stone-400 mb-2">Flavors</p>
                 <div className="flex flex-wrap gap-1.5">
                   {note.palate.flavorCharacteristics.map((char, i) => (
                     <Tag key={i} variant="highlight">{char}</Tag>
@@ -212,9 +227,9 @@ export const TastingDetail: React.FC<Props> = ({ note, onClose, onEdit }) => {
             <InfoRow label="Readiness" value={note.conclusion.readiness} />
             <InfoRow label="Rating" value={`${note.conclusion.personalRating}/100`} />
             {note.conclusion.notes && (
-              <div className="mt-3 pt-3 border-t border-stone-100">
-                <p className="text-xs text-stone-500 mb-2">Notes</p>
-                <p className="text-sm text-charcoal leading-relaxed">{note.conclusion.notes}</p>
+              <div className="mt-3 pt-3 border-t border-stone-100 dark:border-stone-700">
+                <p className="text-xs text-stone-500 dark:text-stone-400 mb-2">Notes</p>
+                <p className="text-sm text-charcoal dark:text-stone-200 leading-relaxed">{note.conclusion.notes}</p>
               </div>
             )}
           </Section>
@@ -222,10 +237,10 @@ export const TastingDetail: React.FC<Props> = ({ note, onClose, onEdit }) => {
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-stone-200 bg-white flex justify-between items-center">
+      <div className="p-4 border-t border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 flex justify-between items-center">
         <button 
           onClick={onClose}
-          className="px-4 py-2 rounded-lg border border-stone-300 text-stone-600 hover:bg-stone-100 hover:border-stone-400 active:scale-95 transition-all duration-200"
+          className="px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 hover:border-stone-400 active:scale-95 transition-all duration-200"
         >
           Close
         </button>

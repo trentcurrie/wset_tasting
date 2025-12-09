@@ -40,10 +40,10 @@ export const TastingCard: React.FC<Props> = ({ note, onClick }) => {
   return (
     <div 
       onClick={onClick}
-      className={`bg-white rounded-xl p-3 md:p-4 border border-stone-200 border-l-4 ${getBorderColor()} shadow-sm hover:shadow-lg hover:border-stone-300 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md transition-all duration-200 cursor-pointer group flex flex-col sm:flex-row gap-4 items-start sm:items-center relative overflow-hidden`}
+      className={`bg-white dark:bg-stone-800 rounded-xl p-3 md:p-4 border border-stone-200 dark:border-stone-700 border-l-4 ${getBorderColor()} shadow-sm hover:shadow-lg hover:border-stone-300 dark:hover:border-stone-600 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md transition-all duration-200 cursor-pointer group flex flex-col sm:flex-row gap-4 items-start sm:items-center relative overflow-hidden`}
     >
       {/* Label Image Thumbnail */}
-      <div className="h-20 w-20 shrink-0 bg-stone-100 rounded-lg border border-stone-100 overflow-hidden flex items-center justify-center group-hover:border-stone-200 transition-colors">
+      <div className="h-20 w-20 shrink-0 bg-stone-100 dark:bg-stone-700 rounded-lg border border-stone-100 dark:border-stone-700 overflow-hidden flex items-center justify-center group-hover:border-stone-200 dark:group-hover:border-stone-600 transition-colors">
         {note.imageUrl ? (
           <img src={note.imageUrl} alt={note.name} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300" />
         ) : (
@@ -61,7 +61,7 @@ export const TastingCard: React.FC<Props> = ({ note, onClick }) => {
             {new Date(note.createdAt).toLocaleDateString()}
           </span>
           {note.type === 'Quick' ? (
-             <span className="text-[10px] bg-stone-100 text-stone-500 px-1.5 py-0.5 rounded flex items-center gap-1">
+             <span className="text-[10px] bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 px-1.5 py-0.5 rounded flex items-center gap-1">
                <Zap size={10} /> Quick
              </span>
           ) : (
@@ -71,10 +71,10 @@ export const TastingCard: React.FC<Props> = ({ note, onClick }) => {
           )}
         </div>
         
-        <h3 className="font-serif text-lg font-semibold text-charcoal group-hover:text-vermillion truncate transition-colors duration-200">
+        <h3 className="font-serif text-lg font-semibold text-charcoal dark:text-stone-100 group-hover:text-vermillion truncate transition-colors duration-200">
           {note.name || "Unknown Wine"}
         </h3>
-        <p className="text-sm text-stone-500 font-medium truncate">{note.producer}</p>
+        <p className="text-sm text-stone-500 dark:text-stone-400 font-medium truncate">{note.producer}</p>
         
         <div className="mt-2 flex items-center gap-3 text-xs text-stone-500 truncate">
           <span className="flex items-center gap-1 truncate">
@@ -86,10 +86,10 @@ export const TastingCard: React.FC<Props> = ({ note, onClick }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 w-full sm:w-auto sm:border-l sm:border-stone-100 sm:pl-4 justify-between sm:justify-end mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-stone-100 sm:border-t-0">
+      <div className="flex items-center gap-4 w-full sm:w-auto sm:border-l sm:border-stone-100 dark:sm:border-stone-700 sm:pl-4 justify-between sm:justify-end mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-stone-100 dark:border-stone-700 sm:border-t-0">
          <div className="text-right">
             <div className="text-xs text-stone-400 uppercase tracking-wider">Score</div>
-            <div className="text-2xl font-serif font-bold text-charcoal">{note.conclusion.personalRating}</div>
+            <div className="text-2xl font-serif font-bold text-charcoal dark:text-stone-100">{note.conclusion.personalRating}</div>
          </div>
          <div className="flex flex-col items-center gap-1">
            <div className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-200 ${getQualityBgClass()}`} title={note.conclusion.quality}>

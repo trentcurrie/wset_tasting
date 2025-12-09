@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Wine, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { ThemeToggle } from './ThemeToggle';
 
 export function Login() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signInWithGoogle } = useAuth();
+  const { theme } = useTheme();
 
   const handleGoogleSignIn = async () => {
     setError('');
@@ -20,20 +23,27 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas-warm flex items-center justify-center p-4">
+    <div className="min-h-screen bg-canvas-warm dark:bg-stone-900 flex items-center justify-center p-4 relative">
+      {/* Theme toggle */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      
       <div className="w-full max-w-sm">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-charcoal rounded-2xl shadow-lg mb-4">
+          <div className={`inline-flex items-center justify-center w-16 h-16 bg-charcoal rounded-2xl shadow-lg mb-4 ${theme === 'dark' ? 'ring-2 ring-white' : ''}`}>
             <Wine className="text-vermillion w-8 h-8" />
           </div>
-          <h1 className="font-serif text-3xl font-bold text-charcoal">PourDecisions</h1>
-          <p className="text-stone-500 mt-1">Drink. Rate. Repeat.</p>
+          <h1 className="font-serif text-3xl font-bold text-charcoal dark:text-white">
+            <span className="text-vermillion">Pour</span>Decisions
+          </h1>
+          <p className="text-stone-500 dark:text-stone-400 mt-1">Drink. Rate. Repeat.</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-stone-200">
-          <p className="text-center text-stone-600 mb-6">
+        <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-lg p-6 border border-stone-200 dark:border-stone-700">
+          <p className="text-center text-stone-600 dark:text-stone-300 mb-6">
             Sign in to access your wine journal
           </p>
 
@@ -47,11 +57,11 @@ export function Login() {
           <button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full bg-white border-2 border-stone-200 text-charcoal py-3 rounded-lg font-semibold hover:bg-stone-50 hover:border-stone-300 active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+            className="w-full bg-white dark:bg-stone-700 border-2 border-stone-200 dark:border-stone-600 text-charcoal dark:text-white py-3 rounded-lg font-semibold hover:bg-stone-50 dark:hover:bg-stone-600 hover:border-stone-300 dark:hover:border-stone-500 active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
           >
             {isLoading ? (
               <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-charcoal"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-charcoal dark:border-white"></div>
                 Signing in...
               </>
             ) : (
