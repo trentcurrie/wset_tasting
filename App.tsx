@@ -4,10 +4,11 @@ import { TastingCard } from './components/TastingCard';
 import { TastingDetail } from './components/TastingDetail';
 import { WineInsights } from './components/WineInsights';
 import { AromaReference } from './components/AromaReference';
+import { AdminPage } from './components/AdminPage';
 import { ThemeToggle } from './components/ThemeToggle';
 import { TastingNote } from './types';
 import { useTastings, FilterCategory } from './hooks';
-import { Plus, Search, Filter, Wine, BarChart3, List, Book, LogOut } from 'lucide-react';
+import { Plus, Search, Filter, Wine, BarChart3, List, Book, LogOut, Shield } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 
 enum View {
@@ -16,13 +17,14 @@ enum View {
   Stats,
   Reference,
   Detail,
-  Edit
+  Edit,
+  Admin
 }
 
 function App() {
   const [view, setView] = useState<View>(View.List);
   const [selectedNote, setSelectedNote] = useState<TastingNote | null>(null);
-  const { signOut, user } = useAuth();
+  const { signOut, user, isAdmin } = useAuth();
   
   // Use the custom hook instead of direct storage operations
   const {
@@ -128,6 +130,18 @@ function App() {
           >
             <Plus size={20} /> New Note
           </button>
+          {isAdmin && (
+            <button 
+              onClick={() => setView(View.Admin)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative overflow-hidden group mt-2 ${view === View.Admin ? 'bg-stone-800 text-white shadow-sm' : 'hover:bg-stone-800/50 text-stone-300'}`}
+            >
+              <Shield size={20} className={view === View.Admin ? 'text-tangerine' : 'group-hover:text-tangerine transition-colors'} /> 
+              <span className="relative">
+                Admin
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-tangerine transition-all duration-200 ${view === View.Admin ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+              </span>
+            </button>
+          )}
         </nav>
         
         {/* Theme toggle and Logout at bottom of sidebar */}
@@ -192,6 +206,12 @@ function App() {
         {view === View.Reference && (
           <div className="fixed inset-0 md:left-64 bg-canvas-warm dark:bg-stone-900 z-40 overflow-auto animate-in fade-in slide-in-from-right-4 duration-300">
             <AromaReference onClose={() => setView(View.List)} />
+          </div>
+        )}
+
+        {view === View.Admin && isAdmin && (
+          <div className="fixed inset-0 md:left-64 bg-canvas-warm dark:bg-stone-900 z-40 overflow-auto animate-in fade-in slide-in-from-right-4 duration-300">
+            <AdminPage onClose={() => setView(View.List)} />
           </div>
         )}
 

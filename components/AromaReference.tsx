@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Search, X, Leaf, Beaker, Clock } from 'lucide-react';
-import { ALL_AROMA_CATEGORIES, searchDescriptors, getDescriptorColor } from '../constants/wsatAromas';
+import { Search, X, Leaf, Beaker, Clock, ExternalLink } from 'lucide-react';
+import { ALL_AROMA_CATEGORIES, searchDescriptors, getDescriptorColor } from '../constants/aromas';
 
 interface Props {
   onClose?: () => void;
@@ -52,8 +52,19 @@ export const AromaReference: React.FC<Props> = ({ onClose }) => {
       <header className="bg-charcoal text-white p-4 md:p-6 flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold font-serif">WSET Aroma Guide</h1>
-            <p className="text-stone-400 text-sm">Systematic Approach to Tasting Descriptors</p>
+            <h1 className="text-xl md:text-2xl font-bold font-serif">Aroma Guide</h1>
+            <p className="text-stone-400 text-sm flex items-center gap-2">
+              Wine Flavor Descriptors
+              <a 
+                href="https://winefolly.com/tips/wine-aroma-wheel-100-flavors/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-teal hover:text-teal/80 transition-colors inline-flex items-center gap-1"
+              >
+                <ExternalLink size={12} />
+                Wine Folly
+              </a>
+            </p>
           </div>
           {onClose && (
             <button onClick={onClose} className="p-2 hover:bg-stone-800 rounded-lg transition-colors">

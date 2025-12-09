@@ -1,6 +1,6 @@
 /**
- * WSET tasting scale conversion utilities
- * Converts WSET qualitative descriptors to numeric values for charting
+ * Wine tasting scale conversion utilities
+ * Converts qualitative descriptors to numeric values for charting
  */
 
 const SCALE_MAP: Record<string, number> = {
@@ -39,8 +39,8 @@ const SCALE_MAP: Record<string, number> = {
 };
 
 /**
- * Convert a WSET scale string to a numeric value (1-5)
- * @param value - The WSET scale descriptor (e.g., "Medium(+)", "High", "Dry")
+ * Convert a scale string to a numeric value (1-5)
+ * @param value - The scale descriptor (e.g., "Medium(+)", "High", "Dry")
  * @returns Numeric value from 1-5, defaults to 3 for unknown values
  */
 export const scaleToNum = (value: string): number => {
@@ -60,7 +60,7 @@ export const numToScale = (num: number): string => {
 };
 
 /**
- * Calculate average of WSET scale values
+ * Calculate average of scale values
  */
 export const averageScaleValues = (values: string[]): number => {
   if (values.length === 0) return 3;

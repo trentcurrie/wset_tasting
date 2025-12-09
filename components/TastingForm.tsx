@@ -4,7 +4,7 @@ import {
   TastingType
 } from '../types';
 import { compressImage } from '../utils';
-import { searchDescriptors, getCategoryForDescriptor, getDescriptorColor } from '../constants/wsatAromas';
+import { searchDescriptors, getCategoryForDescriptor, getDescriptorColor } from '../constants/aromas';
 import { Loader2, Sparkles, ChevronRight, ChevronLeft, Check, Camera, Upload, X, Zap, BookOpen } from 'lucide-react';
 
 interface Props {

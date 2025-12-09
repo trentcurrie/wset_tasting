@@ -50,6 +50,7 @@ create table if not exists public.profiles (
   email text,
   full_name text,
   avatar_url text,
+  is_admin boolean default false not null,
   created_at timestamptz default now() not null
 );
 
@@ -69,24 +70,83 @@ create policy "Users can update own profile"
   for update
   using (auth.uid() = id);
 
+-- Create allowed_emails table for invite management
+create table if not exists public.allowed_emails (
+  id uuid primary key default uuid_generate_v4(),
+  email text unique not null,
+  added_by uuid references public.profiles(id),
+  created_at timestamptz default now() not null
+);
+
+-- Enable RLS on allowed_emails
+alter table public.allowed_emails enable row level security;
+
+-- Policy: Only admins can view allowed_emails
+create policy "Admins can view allowed_emails"
+  on public.allowed_emails
+  for select
+  to authenticated
+  using (
+    exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.is_admin = true
+    )
+  );
+
+-- Policy: Only admins can insert allowed_emails
+create policy "Admins can insert allowed_emails"
+  on public.allowed_emails
+  for insert
+  to authenticated
+  with check (
+    exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.is_admin = true
+    )
+  );
+
+-- Policy: Only admins can delete allowed_emails
+create policy "Admins can delete allowed_emails"
+  on public.allowed_emails
+  for delete
+  to authenticated
+  using (
+    exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.is_admin = true
+    )
+  );
+
+-- Seed initial allowed emails (your emails)
+insert into public.allowed_emails (email) values
+  ('trent.d.currie@gmail.com'),
+  ('trentdcurrie@gmail.com')
+on conflict (email) do nothing;
+
 -- Function to create profile on signup
--- Only allows specific email addresses to sign up
+-- Checks allowed_emails table instead of hardcoded array
 create or replace function public.handle_new_user()
 returns trigger as $$
 declare
-  allowed_emails text[] := ARRAY[
-    'trent.d.currie@gmail.com',
-    'trentdcurrie@gmail.com'
-  ];
+  is_allowed boolean;
+  is_first_admin boolean;
 begin
-  -- Check if email is in allowed list
-  if new.email = ANY(allowed_emails) then
-    insert into public.profiles (id, email, full_name, avatar_url)
+  -- Check if email is in allowed_emails table
+  select exists(
+    select 1 from public.allowed_emails where email = new.email
+  ) into is_allowed;
+
+  if is_allowed then
+    -- Check if this is one of the original admin emails
+    is_first_admin := new.email in ('trent.d.currie@gmail.com', 'trentdcurrie@gmail.com');
+    
+    insert into public.profiles (id, email, full_name, avatar_url, is_admin)
     values (
       new.id,
       new.email,
       new.raw_user_meta_data->>'full_name',
-      new.raw_user_meta_data->>'avatar_url'
+      new.raw_user_meta_data->>'avatar_url',
+      is_first_admin
     );
     return new;
   else

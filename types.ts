@@ -1,7 +1,7 @@
-export enum WSETLevel {
-  Level2 = "Level 2",
-  Level3 = "Level 3",
-  Diploma = "Diploma"
+export enum TasterLevel {
+  Beginner = "Beginner",
+  Intermediate = "Intermediate",
+  Advanced = "Advanced"
 }
 
 // Appearance

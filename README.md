@@ -4,7 +4,7 @@ A personal wine tasting notes app with Google authentication and cloud sync.
 
 ## Features
 
-- 🍷 Track wine tastings with WSET-style notes
+- 🍷 Track wine tastings with structured tasting notes
 - 🔐 Google OAuth authentication
 - ☁️ Cloud sync via Supabase (data syncs across devices)
 - 📱 Works on mobile and desktop

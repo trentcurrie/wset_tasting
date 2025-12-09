@@ -1,7 +1,7 @@
 import React from 'react';
 import { TastingNote } from '../types';
 import { getQualityInitial } from '../utils';
-import { getDescriptorColor } from '../constants/wsatAromas';
+import { getDescriptorColor } from '../constants/aromas';
 import { X, Edit3, MapPin, Calendar, Droplet, Wine, Eye, Wind, Grape, Award } from 'lucide-react';
 
 interface Props {

@@ -1,2 +1,2 @@
-export * from './wsatAromas';
+export * from './aromas';
 export * from './sampleTastings';

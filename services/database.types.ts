@@ -39,6 +39,7 @@ export interface Database {
           email: string | null
           full_name: string | null
           avatar_url: string | null
+          is_admin: boolean
           created_at: string
         }
         Insert: {
@@ -46,6 +47,7 @@ export interface Database {
           email?: string | null
           full_name?: string | null
           avatar_url?: string | null
+          is_admin?: boolean
           created_at?: string
         }
         Update: {
@@ -53,6 +55,28 @@ export interface Database {
           email?: string | null
           full_name?: string | null
           avatar_url?: string | null
+          is_admin?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      allowed_emails: {
+        Row: {
+          id: string
+          email: string
+          added_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          added_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          added_by?: string | null
           created_at?: string
         }
         Relationships: []
