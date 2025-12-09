@@ -1,89 +1,101 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase, isSupabaseConfigured } from '../services/supabase';
+import { User, Session } from '@supabase/supabase-js';
+import { migrateLocalToSupabase } from '../services/tastingService';
 
 interface AuthContextType {
+  user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
-  login: (password: string) => boolean;
-  logout: () => void;
+  isLoading: boolean;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Simple hash function for password comparison
-// In production, this would be a proper bcrypt comparison on a backend
-const hashPassword = async (password: string): Promise<string> => {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-};
-
-const AUTH_KEY = 'pourdecisions_authenticated';
-const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
-    const session = localStorage.getItem(AUTH_KEY);
-    if (session) {
-      const { expiry } = JSON.parse(session);
-      if (Date.now() < expiry) {
-        setIsAuthenticated(true);
-      } else {
-        localStorage.removeItem(AUTH_KEY);
-      }
-    }
-    setIsLoading(false);
-  }, []);
-
-  const login = (password: string): boolean => {
-    // The password hash is set at build time via environment variable
-    // For local development, you can set VITE_AUTH_PASSWORD in a .env file
-    const expectedHash = import.meta.env.VITE_AUTH_PASSWORD_HASH;
-    
-    // If no hash is configured, accept any password (development mode)
-    if (!expectedHash) {
-      console.warn('No VITE_AUTH_PASSWORD_HASH configured. Authentication bypassed.');
-      setIsAuthenticated(true);
-      const session = { expiry: Date.now() + SESSION_DURATION };
-      localStorage.setItem(AUTH_KEY, JSON.stringify(session));
-      return true;
+    if (!isSupabaseConfigured()) {
+      setIsLoading(false);
+      return;
     }
 
-    // Hash the input and compare
-    hashPassword(password).then(inputHash => {
-      if (inputHash === expectedHash) {
-        setIsAuthenticated(true);
-        const session = { expiry: Date.now() + SESSION_DURATION };
-        localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+
+      // Migrate localStorage data if user just logged in
+      if (session?.user) {
+        migrateLocalToSupabase(session.user.id).then(count => {
+          if (count > 0) {
+            console.log(`Migrated ${count} tastings from localStorage to Supabase`);
+          }
+        });
       }
     });
 
-    // For immediate feedback, do a sync check as well
-    // This is a simplified version - the async hash is more secure
-    const syncCheck = btoa(password); // Simple encoding for immediate feedback
-    const expectedSimple = import.meta.env.VITE_AUTH_PASSWORD_SIMPLE;
-    
-    if (expectedSimple && syncCheck === expectedSimple) {
-      setIsAuthenticated(true);
-      const session = { expiry: Date.now() + SESSION_DURATION };
-      localStorage.setItem(AUTH_KEY, JSON.stringify(session));
-      return true;
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+
+        // Migrate on sign in
+        if (event === 'SIGNED_IN' && session?.user) {
+          const count = await migrateLocalToSupabase(session.user.id);
+          if (count > 0) {
+            console.log(`Migrated ${count} tastings from localStorage to Supabase`);
+          }
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const signInWithGoogle = async () => {
+    if (!isSupabaseConfigured()) {
+      console.error('Supabase not configured');
+      return;
     }
 
-    return false;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      console.error('Error signing in with Google:', error);
+      throw error;
+    }
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem(AUTH_KEY);
+  const signOut = async () => {
+    if (!isSupabaseConfigured()) {
+      return;
+    }
+
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
   };
 
   if (isLoading) {
@@ -95,7 +107,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        isAuthenticated: !!user,
+        isLoading,
+        signInWithGoogle,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,64 +1,60 @@
 # PourDecisions - Drink. Rate. Repeat.
 
-A personal wine tasting notes app with AI-powered insights.
+A personal wine tasting notes app with Google authentication and cloud sync.
 
-## Run Locally
+## Features
 
-**Prerequisites:** Node.js
+- 🍷 Track wine tastings with WSET-style notes
+- 🔐 Google OAuth authentication
+- ☁️ Cloud sync via Supabase (data syncs across devices)
+- 📱 Works on mobile and desktop
+
+## Setup
+
+### 1. Create a Supabase Project
+
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Go to **SQL Editor** and run the SQL from `supabase/schema.sql`
+3. Go to **Authentication** → **Providers** → Enable **Google**
+4. Set up Google OAuth:
+   - Go to [Google Cloud Console](https://console.cloud.google.com)
+   - Create OAuth 2.0 credentials
+   - Add authorized redirect URI: `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback`
+   - Copy Client ID and Secret to Supabase Google provider settings
+
+### 2. Run Locally
 
 1. Install dependencies:
    ```bash
    npm install
    ```
 
-2. Generate your password hash:
-   ```bash
-   node scripts/generate-password-hash.js your-password-here
+2. Create a `.env` file:
+   ```
+   VITE_SUPABASE_URL=https://your-project-id.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-anon-key-here
    ```
 
-3. Create a `.env` file with your credentials:
-   ```
-   VITE_AUTH_PASSWORD_SIMPLE=your_base64_password
-   VITE_AUTH_PASSWORD_HASH=your_sha256_hash
-   VITE_GEMINI_API_KEY=your_gemini_api_key
-   ```
-
-4. Run the app:
+3. Run the app:
    ```bash
    npm run dev
    ```
 
-## Deploy to GitHub Pages
+### 3. Deploy to GitHub Pages
 
-This app is configured for automatic deployment via GitHub Actions.
+1. **Add Repository Secrets** (Settings → Secrets → Actions):
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
 
-### Setup Steps:
+2. **Enable GitHub Pages**:
+   - Settings → Pages → Source: "GitHub Actions"
 
-1. **Enable GitHub Pages** in your repository:
-   - Go to Settings → Pages
-   - Under "Build and deployment", select "GitHub Actions"
+3. **Configure Custom Domain** (optional):
+   - Add CNAME DNS record: `pourdecisions` → `trentcurrie.github.io`
+   - Settings → Pages → Add custom domain
 
-2. **Add Repository Secrets**:
-   - Go to Settings → Secrets and variables → Actions
-   - Add the following secrets:
-     - `VITE_AUTH_PASSWORD_SIMPLE` - Base64 encoded password
-     - `VITE_AUTH_PASSWORD_HASH` - SHA-256 hash of password
-     - `VITE_GEMINI_API_KEY` - Your Gemini API key (optional)
-
-3. **Generate password hashes**:
-   ```bash
-   node scripts/generate-password-hash.js your-password-here
-   ```
-
-4. **Push to main branch** - The GitHub Action will automatically build and deploy.
+4. **Update Google OAuth redirect URIs**:
+   - Add `https://pourdecisions.trentcurrie.com` to authorized origins
+   - Add `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback` as redirect URI
 
 Your app will be available at: `https://pourdecisions.trentcurrie.com/`
-
-### Custom Domain
-
-This app is configured to use `pourdecisions.trentcurrie.com`.
-
-DNS setup:
-1. Add a **CNAME DNS record**: `pourdecisions` → `trentcurrie.github.io`
-2. Wait for DNS propagation (can take up to 24 hours)
-3. Enable HTTPS in GitHub Pages settings once the domain is verified

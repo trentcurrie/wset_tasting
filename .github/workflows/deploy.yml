@@ -32,8 +32,8 @@ jobs:
 
       - name: Build
         env:
-          VITE_AUTH_PASSWORD_SIMPLE: ${{ secrets.VITE_AUTH_PASSWORD_SIMPLE }}
-          VITE_AUTH_PASSWORD_HASH: ${{ secrets.VITE_AUTH_PASSWORD_HASH }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: npm run build
 
       - name: Setup Pages

@@ -21,7 +21,7 @@ enum View {
 function App() {
   const [view, setView] = useState<View>(View.List);
   const [selectedNote, setSelectedNote] = useState<TastingNote | null>(null);
-  const { logout } = useAuth();
+  const { signOut, user } = useAuth();
   
   // Use the custom hook instead of direct storage operations
   const {
@@ -120,7 +120,7 @@ function App() {
         {/* Logout button at bottom of sidebar */}
         <div className="p-4 border-t border-stone-800">
           <button 
-            onClick={logout}
+            onClick={signOut}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800/50 transition-all duration-200"
           >
             <LogOut size={18} /> Sign Out

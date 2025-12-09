@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { TastingNote } from '../types';
-import { getTastings, saveTasting, deleteTasting } from '../services/storage';
+import { getTastings, saveTasting, deleteTasting } from '../services/tastingService';
 import { SAMPLE_TASTINGS } from '../constants/sampleTastings';
+import { useAuth } from '../context/AuthContext';
 
 export type FilterCategory = 'All' | 'Red' | 'White' | 'Rose';
 
@@ -44,6 +45,7 @@ interface UseTastingsReturn {
  */
 export const useTastings = (options: UseTastingsOptions = {}): UseTastingsReturn => {
   const { initialFilter = 'All', initialSearch = '' } = options;
+  const { user } = useAuth();
   
   const [tastings, setTastings] = useState<TastingNote[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,10 +53,10 @@ export const useTastings = (options: UseTastingsOptions = {}): UseTastingsReturn
   const [searchTerm, setSearchTerm] = useState(initialSearch);
 
   // Load tastings from storage on mount
-  const refreshTastings = useCallback(() => {
+  const refreshTastings = useCallback(async () => {
     setIsLoading(true);
     try {
-      const loaded = getTastings();
+      const loaded = await getTastings(user?.id);
       setTastings(loaded);
     } catch (error) {
       console.error('Failed to load tastings:', error);
@@ -62,19 +64,26 @@ export const useTastings = (options: UseTastingsOptions = {}): UseTastingsReturn
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
-  // Seed sample data on first load
+  // Seed sample data on first load (only for localStorage fallback)
   useEffect(() => {
-    const hasSeeded = localStorage.getItem('wset_tasting_seeded');
-    if (!hasSeeded) {
-      const existing = getTastings();
-      if (existing.length === 0) {
-        SAMPLE_TASTINGS.forEach(tasting => saveTasting(tasting));
-        localStorage.setItem('wset_tasting_seeded', 'true');
+    const seedSampleData = async () => {
+      if (!user) {
+        const hasSeeded = localStorage.getItem('pourdecisions_seeded');
+        if (!hasSeeded) {
+          const existing = await getTastings();
+          if (existing.length === 0) {
+            for (const tasting of SAMPLE_TASTINGS) {
+              await saveTasting(tasting);
+            }
+            localStorage.setItem('pourdecisions_seeded', 'true');
+          }
+        }
       }
-    }
-  }, []);
+    };
+    seedSampleData();
+  }, [user]);
 
   useEffect(() => {
     refreshTastings();
@@ -104,27 +113,27 @@ export const useTastings = (options: UseTastingsOptions = {}): UseTastingsReturn
   }, [tastings, filter, searchTerm]);
 
   // CRUD operations
-  const addTasting = useCallback((note: TastingNote) => {
+  const addTasting = useCallback(async (note: TastingNote) => {
     const newNote = {
       ...note,
       id: note.id || crypto.randomUUID(),
       createdAt: note.createdAt || Date.now(),
     };
-    saveTasting(newNote);
+    await saveTasting(newNote, user?.id);
     setTastings((prev) => [newNote, ...prev]);
-  }, []);
+  }, [user?.id]);
 
-  const updateTasting = useCallback((note: TastingNote) => {
-    saveTasting(note);
+  const updateTasting = useCallback(async (note: TastingNote) => {
+    await saveTasting(note, user?.id);
     setTastings((prev) => 
       prev.map((t) => (t.id === note.id ? note : t))
     );
-  }, []);
+  }, [user?.id]);
 
-  const removeTasting = useCallback((id: string) => {
-    deleteTasting(id);
+  const removeTasting = useCallback(async (id: string) => {
+    await deleteTasting(id, user?.id);
     setTastings((prev) => prev.filter((t) => t.id !== id));
-  }, []);
+  }, [user?.id]);
 
   const getTastingById = useCallback(
     (id: string) => tastings.find((t) => t.id === id),
