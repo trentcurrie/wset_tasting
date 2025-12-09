@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SommLog AI - WSET Wine Tracker</title>
+    <title>PourDecisions - Drink. Rate. Repeat.</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
@@ -15,23 +15,89 @@
               sans: ['"Inter"', 'sans-serif'],
             },
             colors: {
-              wine: {
-                50: '#f9f5f6',
-                100: '#f2e8eb',
-                200: '#e5cfd6',
-                300: '#d0a8b6',
-                400: '#b6788e',
-                500: '#9e526c',
-                600: '#843b53',
-                700: '#6e2f42',
-                800: '#5c2938',
-                900: '#4f2532',
+              // Bold Bauhaus-inspired palette
+              vermillion: {
+                DEFAULT: '#E31C25',
+                dark: '#C41820',
+              },
+              tangerine: {
+                DEFAULT: '#FF6B00',
+                light: '#FFEDD5',
+              },
+              teal: {
+                DEFAULT: '#00AEEF',
+                light: '#E0F4FD',
+              },
+              vine: {
+                DEFAULT: '#2D8C4F',
+                light: '#D1FAE5',
+              },
+              grape: {
+                DEFAULT: '#6B2D7B',
+                light: '#F3E8FF',
+              },
+              sun: {
+                DEFAULT: '#FFD700',
+                light: '#FEF9C3',
+              },
+              charcoal: {
+                DEFAULT: '#1A1A1A',
+                light: '#292524',
+              },
+              canvas: {
+                DEFAULT: '#FFFFFF',
+                warm: '#F5F5F0',
+              },
+              // Keep stone for neutrals
+              stone: {
+                50: '#FAFAF9',
+                100: '#F5F5F4',
+                200: '#E7E5E4',
+                300: '#D6D3D1',
+                400: '#A8A29E',
+                500: '#78716C',
+                600: '#57534E',
+                700: '#44403C',
+                800: '#292524',
+                900: '#1C1917',
               }
             }
           }
         }
       }
     </script>
+    <style>
+      /* CSS Variables for theming */
+      :root {
+        --color-vermillion: #E31C25;
+        --color-tangerine: #FF6B00;
+        --color-teal: #00AEEF;
+        --color-vine: #2D8C4F;
+        --color-grape: #6B2D7B;
+        --color-sun: #FFD700;
+        --color-charcoal: #1A1A1A;
+        --color-canvas: #FFFFFF;
+        
+        --bg-primary: #F5F5F0;
+        --bg-sidebar: #1A1A1A;
+        --text-primary: #1A1A1A;
+        --accent-primary: #E31C25;
+      }
+      
+      [data-theme="dark"] {
+        --bg-primary: #1C1917;
+        --bg-sidebar: #0A0A0A;
+        --text-primary: #F5F5F4;
+      }
+
+      /* Geometric accent - Sol LeWitt inspired grid */
+      .grid-overlay {
+        background-image: 
+          linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+    </style>
   <script type="importmap">
 {
   "imports": {
@@ -45,7 +111,8 @@
 }
 </script>
 </head>
-  <body class="bg-stone-50 text-stone-800 font-sans antialiased">
+  <body class="bg-canvas-warm text-charcoal font-sans antialiased">
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

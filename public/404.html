@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PourDecisions</title>
+  <script>
+    // Single Page App redirect for GitHub Pages
+    // Redirects all 404s back to index.html with the path preserved
+    sessionStorage.setItem('redirect', window.location.pathname);
+    window.location.replace('/');
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>

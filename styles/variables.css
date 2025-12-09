@@ -1,0 +1,155 @@
+/**
+ * SommLog Design System
+ * Inspired by Josef Albers, Sol LeWitt, Ellsworth Kelly, and Bauhaus artists
+ * Bold, saturated colors with geometric precision
+ */
+
+:root {
+  /* ═══════════════════════════════════════════════════════════════
+     BASE PALETTE - Bold & Saturated (Bauhaus-inspired)
+     ═══════════════════════════════════════════════════════════════ */
+  
+  /* Primary Colors */
+  --color-canvas: #FFFFFF;
+  --color-charcoal: #1A1A1A;
+  --color-warm-gray: #F5F5F0;
+  
+  /* Accent Colors - Vibrant & Bold */
+  --color-vermillion: #E31C25;      /* Bold red */
+  --color-tangerine: #FF6B00;       /* Saturated orange */
+  --color-electric-teal: #00AEEF;   /* Cyan/teal */
+  --color-vine-green: #2D8C4F;      /* Forest green */
+  --color-grape-purple: #6B2D7B;    /* Deep purple */
+  --color-sun-yellow: #FFD700;      /* Golden yellow */
+  --color-deep-blue: #1E3A8A;       /* Navy */
+
+  /* Neutral Palette */
+  --color-stone-50: #FAFAF9;
+  --color-stone-100: #F5F5F4;
+  --color-stone-200: #E7E5E4;
+  --color-stone-300: #D6D3D1;
+  --color-stone-400: #A8A29E;
+  --color-stone-500: #78716C;
+  --color-stone-600: #57534E;
+  --color-stone-700: #44403C;
+  --color-stone-800: #292524;
+  --color-stone-900: #1C1917;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SEMANTIC MAPPINGS - Light Mode
+     ═══════════════════════════════════════════════════════════════ */
+  
+  /* Backgrounds */
+  --bg-primary: var(--color-warm-gray);
+  --bg-secondary: var(--color-canvas);
+  --bg-tertiary: var(--color-stone-100);
+  --bg-sidebar: var(--color-charcoal);
+  --bg-card: var(--color-canvas);
+  --bg-card-hover: var(--color-stone-50);
+
+  /* Text */
+  --text-primary: var(--color-charcoal);
+  --text-secondary: var(--color-stone-600);
+  --text-muted: var(--color-stone-400);
+  --text-inverse: var(--color-canvas);
+  --text-accent: var(--color-vermillion);
+
+  /* Accents - For interactive elements */
+  --accent-primary: var(--color-vermillion);
+  --accent-primary-hover: #C41820;
+  --accent-secondary: var(--color-tangerine);
+  --accent-tertiary: var(--color-electric-teal);
+
+  /* Wine Category Colors */
+  --color-wine-red: var(--color-vermillion);
+  --color-wine-red-bg: #FEE2E2;
+  --color-wine-red-border: #FECACA;
+  --color-wine-white: var(--color-sun-yellow);
+  --color-wine-white-bg: #FEF9C3;
+  --color-wine-white-border: #FDE68A;
+  --color-wine-rose: var(--color-tangerine);
+  --color-wine-rose-bg: #FFEDD5;
+  --color-wine-rose-border: #FED7AA;
+
+  /* Quality Badge Colors */
+  --color-quality-outstanding: var(--color-grape-purple);
+  --color-quality-verygood: var(--color-vine-green);
+  --color-quality-good: var(--color-electric-teal);
+  --color-quality-acceptable: var(--color-sun-yellow);
+  --color-quality-poor: var(--color-stone-400);
+
+  /* Borders */
+  --border-light: var(--color-stone-200);
+  --border-medium: var(--color-stone-300);
+  --border-focus: var(--color-electric-teal);
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════════════════════════ */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SPACING
+     ═══════════════════════════════════════════════════════════════ */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* ═══════════════════════════════════════════════════════════════
+     EFFECTS
+     ═══════════════════════════════════════════════════════════════ */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE
+   ═══════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg-primary: var(--color-stone-900);
+  --bg-secondary: var(--color-stone-800);
+  --bg-tertiary: var(--color-stone-700);
+  --bg-sidebar: var(--color-charcoal);
+  --bg-card: var(--color-stone-800);
+  --bg-card-hover: var(--color-stone-700);
+
+  --text-primary: var(--color-stone-100);
+  --text-secondary: var(--color-stone-300);
+  --text-muted: var(--color-stone-500);
+  --text-inverse: var(--color-charcoal);
+
+  --border-light: var(--color-stone-700);
+  --border-medium: var(--color-stone-600);
+
+  /* Wine colors remain vibrant in dark mode */
+  --color-wine-red-bg: rgba(227, 28, 37, 0.2);
+  --color-wine-red-border: rgba(227, 28, 37, 0.4);
+  --color-wine-white-bg: rgba(255, 215, 0, 0.2);
+  --color-wine-white-border: rgba(255, 215, 0, 0.4);
+  --color-wine-rose-bg: rgba(255, 107, 0, 0.2);
+  --color-wine-rose-border: rgba(255, 107, 0, 0.4);
+}

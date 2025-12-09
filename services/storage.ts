@@ -1,6 +1,6 @@
 import { TastingNote } from "../types";
 
-const STORAGE_KEY = 'sommlog_tastings';
+const STORAGE_KEY = 'pourdecisions_tastings';
 
 export const getTastings = (): TastingNote[] => {
   try {
