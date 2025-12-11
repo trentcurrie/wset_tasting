@@ -105,11 +105,43 @@ export const TERTIARY_AROMAS: AromaCategory = {
   ]
 };
 
+// Faults - wine defects and off-aromas
+export const FAULT_AROMAS: AromaCategory = {
+  name: 'Faults / Off-Aromas',
+  subcategories: [
+    {
+      name: 'Cork Taint (TCA)',
+      descriptors: ['Musty Cardboard', 'Wet Dog', 'Damp Basement', 'Moldy Newspaper']
+    },
+    {
+      name: 'Oxidation',
+      descriptors: ['Bruised Apple', 'Sherry-like', 'Stale', 'Flat', 'Nutty (excessive)']
+    },
+    {
+      name: 'Reduction / Sulfides',
+      descriptors: ['Rotten Eggs', 'Burnt Rubber', 'Struck Match', 'Garlic', 'Onion', 'Cabbage', 'Sewage']
+    },
+    {
+      name: 'Volatile Acidity',
+      descriptors: ['Vinegar', 'Nail Polish Remover', 'Acetone', 'Paint Thinner']
+    },
+    {
+      name: 'Brettanomyces',
+      descriptors: ['Band-Aid', 'Barnyard', 'Horse Stable', 'Sweaty Saddle', 'Medicinal', 'Smoky Bacon']
+    },
+    {
+      name: 'Other Faults',
+      descriptors: ['Cooked', 'Maderized', 'Heat Damage', 'Mousy', 'Geranium', 'Sauerkraut']
+    }
+  ]
+};
+
 // All categories combined
 export const ALL_AROMA_CATEGORIES: AromaCategory[] = [
   PRIMARY_AROMAS,
   SECONDARY_AROMAS,
-  TERTIARY_AROMAS
+  TERTIARY_AROMAS,
+  FAULT_AROMAS
 ];
 
 // Category color mapping for chips (fallback)
@@ -117,6 +149,7 @@ export const CATEGORY_COLORS: Record<string, { bg: string; text: string; border:
   'Primary (Grape-Derived)': { bg: 'bg-vine/15', text: 'text-vine', border: 'border-vine/30' },
   'Secondary (Winemaking)': { bg: 'bg-tangerine/15', text: 'text-tangerine', border: 'border-tangerine/30' },
   'Tertiary (Aging)': { bg: 'bg-grape/15', text: 'text-grape', border: 'border-grape/30' },
+  'Faults / Off-Aromas': { bg: 'bg-red-500/15', text: 'text-red-600', border: 'border-red-500/30' },
 };
 
 // Descriptor-specific colors based on actual item appearance
@@ -350,6 +383,40 @@ export const DESCRIPTOR_COLORS: Record<string, { bg: string; text: string; borde
   'Cocoa': { bg: 'bg-stone-300/50', text: 'text-stone-950', border: 'border-stone-400/60' },
   'Sourdough': { bg: 'bg-[#FEF3C7]/30', text: 'text-[#92400E]', border: 'border-[#FEF3C7]/50' },
   'Lager': { bg: 'bg-[#FDE68A]/25', text: 'text-[#A16207]', border: 'border-[#FDE68A]/40' },
+
+  // === FAULTS / OFF-AROMAS ===
+  // Cork Taint (musty grays)
+  'Musty Cardboard': { bg: 'bg-stone-300/40', text: 'text-stone-700', border: 'border-stone-400/50' },
+  'Wet Dog': { bg: 'bg-stone-300/40', text: 'text-stone-700', border: 'border-stone-400/50' },
+  'Moldy Basement': { bg: 'bg-stone-400/40', text: 'text-stone-800', border: 'border-stone-500/50' },
+  'Damp Cork': { bg: 'bg-amber-200/30', text: 'text-stone-700', border: 'border-stone-400/50' },
+
+  // Oxidation (browns, sherries)
+  'Sherry-like': { bg: 'bg-amber-300/40', text: 'text-amber-900', border: 'border-amber-400/50' },
+  'Bruised Apple': { bg: 'bg-amber-200/40', text: 'text-amber-800', border: 'border-amber-300/50' },
+  'Caramelized': { bg: 'bg-amber-400/40', text: 'text-amber-900', border: 'border-amber-500/50' },
+  'Madeirized': { bg: 'bg-amber-500/30', text: 'text-amber-950', border: 'border-amber-600/50' },
+
+  // Volatile Acidity (sharp reds)
+  'Vinegar': { bg: 'bg-red-300/30', text: 'text-red-800', border: 'border-red-400/50' },
+  'Nail Polish Remover': { bg: 'bg-pink-200/30', text: 'text-red-700', border: 'border-pink-300/50' },
+  'Acetone': { bg: 'bg-pink-100/30', text: 'text-red-700', border: 'border-pink-200/50' },
+
+  // Sulfur Compounds (yellows, greens - sulfuric)
+  'Burnt Rubber': { bg: 'bg-slate-400/40', text: 'text-slate-900', border: 'border-slate-500/50' },
+  'Rotten Eggs': { bg: 'bg-yellow-200/40', text: 'text-yellow-800', border: 'border-yellow-300/50' },
+  'Struck Match': { bg: 'bg-yellow-300/30', text: 'text-yellow-900', border: 'border-yellow-400/50' },
+  'Garlic': { bg: 'bg-lime-100/30', text: 'text-lime-800', border: 'border-lime-200/50' },
+  'Onion': { bg: 'bg-amber-100/30', text: 'text-amber-800', border: 'border-amber-200/50' },
+  'Cabbage': { bg: 'bg-green-200/30', text: 'text-green-800', border: 'border-green-300/50' },
+  'Sewage': { bg: 'bg-stone-400/40', text: 'text-stone-800', border: 'border-stone-500/50' },
+
+  // Brettanomyces (earthy browns, medicinal)
+  'Band-Aid': { bg: 'bg-red-200/30', text: 'text-red-700', border: 'border-red-300/50' },
+  'Barnyard': { bg: 'bg-amber-300/30', text: 'text-amber-900', border: 'border-amber-400/50' },
+  'Horse Blanket': { bg: 'bg-amber-200/30', text: 'text-amber-800', border: 'border-amber-300/50' },
+  'Sweaty Saddle': { bg: 'bg-amber-300/30', text: 'text-amber-900', border: 'border-amber-400/50' },
+  'Medicinal': { bg: 'bg-red-100/30', text: 'text-red-700', border: 'border-red-200/50' },
 };
 
 // Get the main category name for a descriptor (without subcategory)

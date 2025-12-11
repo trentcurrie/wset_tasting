@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { 
   TastingNote, INITIAL_TASTING_NOTE, 
-  TastingType
+  TastingType, WineColor
 } from '../types';
 import { compressImage } from '../utils';
 import { searchDescriptors, getCategoryForDescriptor, getDescriptorColor } from '../constants/aromas';
-import { Loader2, Sparkles, ChevronRight, ChevronLeft, Check, Camera, Upload, X, Zap, BookOpen } from 'lucide-react';
+import { VisualColorPicker } from './VisualColorPicker';
+import { AromaPicker } from './AromaPicker';
+import { Loader2, Sparkles, ChevronRight, ChevronLeft, Check, Camera, Upload, X, Zap, BookOpen, Palette, Grid3X3 } from 'lucide-react';
 
 interface Props {
   onSave: (note: TastingNote) => void;
@@ -133,6 +135,8 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
   );
   const isEditing = !!initialNote;
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showAromaPicker, setShowAromaPicker] = useState(false);
+  const [showFlavorPicker, setShowFlavorPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -336,7 +340,7 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
       case 1: 
         return (
           <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-             <div className="bg-blue-50 p-3 rounded-md text-sm text-blue-800 mb-4 flex gap-2">
+             <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md text-sm text-blue-800 dark:text-blue-300 mb-4 flex gap-2">
                 <BookOpen size={16} className="shrink-0 mt-0.5" />
                 <span>Tip: Tilt the glass 45° against a white background to judge color and rim variation accurately.</span>
              </div>
@@ -352,21 +356,22 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
                 options={["Pale", "Medium", "Deep"]} 
                 onChange={(v) => updateField('appearance', 'intensity', v)} 
               />
-              <SelectField 
-                label="Color Category" 
-                value={formData.appearance.colorCategory} 
-                options={["White", "Rose", "Red"]} 
-                onChange={(v) => updateField('appearance', 'colorCategory', v)} 
-              />
-              <SelectField 
-                label="Color Hue" 
-                value={formData.appearance.color} 
-                options={
-                  formData.appearance.colorCategory === 'White' ? ["Lemon-Green", "Lemon", "Gold", "Amber", "Brown"] :
-                  formData.appearance.colorCategory === 'Rose' ? ["Pink", "Salmon", "Orange"] :
-                  ["Purple", "Ruby", "Garnet", "Tawny", "Brown"]
-                } 
-                onChange={(v) => updateField('appearance', 'color', v)} 
+              
+              {/* Visual Color Picker */}
+              <VisualColorPicker
+                colorCategory={formData.appearance.colorCategory}
+                selectedColor={formData.appearance.color}
+                onCategoryChange={(category) => {
+                  updateField('appearance', 'colorCategory', category);
+                  // Reset color to first option of new category
+                  const defaultColors: Record<string, WineColor> = {
+                    'White': 'Lemon',
+                    'Rose': 'Pink',
+                    'Red': 'Ruby'
+                  };
+                  updateField('appearance', 'color', defaultColors[category]);
+                }}
+                onColorChange={(color) => updateField('appearance', 'color', color)}
               />
           </div>
         );
@@ -391,29 +396,91 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
                 options={["Youthful", "Developing", "Fully Developed", "Tired/Past Best"]} 
                 onChange={(v) => updateField('nose', 'development', v)} 
               />
-              <TagInput 
-                label="Aroma Characteristics (Fruit, Floral, Spice, Oak...)" 
-                tags={formData.nose.characteristics} 
-                onChange={(tags) => updateField('nose', 'characteristics', tags)}
-              />
+              
+              {/* Aroma Selection with Picker toggle */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-stone-600 dark:text-stone-400">
+                    Aroma Characteristics
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowAromaPicker(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-vine bg-vine/10 rounded-full hover:bg-vine/20 transition-colors"
+                  >
+                    <Palette size={14} /> Browse All
+                  </button>
+                </div>
+                <TagInput 
+                  label="" 
+                  tags={formData.nose.characteristics} 
+                  onChange={(tags) => updateField('nose', 'characteristics', tags)}
+                />
+              </div>
+
+              {/* Aroma Picker Modal */}
+              {showAromaPicker && (
+                <div className="fixed inset-0 bg-charcoal/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+                  <div className="w-full max-w-md">
+                    <AromaPicker
+                      selectedAromas={formData.nose.characteristics}
+                      onChange={(aromas) => updateField('nose', 'characteristics', aromas)}
+                      onClose={() => setShowAromaPicker(false)}
+                    />
+                  </div>
+                </div>
+              )}
           </div>
         );
       case 3:
         return (
-           <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="col-span-full bg-blue-50 p-3 rounded-md text-sm text-blue-800 mb-2">
+           <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md text-sm text-blue-800 dark:text-blue-300 mb-2">
                  <span>Tip: 'Acidity' makes your mouth water. 'Tannin' dries your gums out.</span>
               </div>
-              <SelectField label="Sweetness" value={formData.palate.sweetness} options={["Dry", "Off-Dry", "Medium-Dry", "Medium-Sweet", "Sweet", "Luscious"]} onChange={(v) => updateField('palate', 'sweetness', v)} />
-              <SelectField label="Acidity" value={formData.palate.acidity} options={["Low", "Medium(-)", "Medium", "Medium(+)", "High"]} onChange={(v) => updateField('palate', 'acidity', v)} />
-              <SelectField label="Tannin" value={formData.palate.tannin} options={["Low", "Medium(-)", "Medium", "Medium(+)", "High"]} onChange={(v) => updateField('palate', 'tannin', v)} />
-              <SelectField label="Alcohol" value={formData.palate.alcohol} options={["Low", "Medium", "High"]} onChange={(v) => updateField('palate', 'alcohol', v)} />
-              <SelectField label="Body" value={formData.palate.body} options={["Light", "Medium(-)", "Medium", "Medium(+)", "Full"]} onChange={(v) => updateField('palate', 'body', v)} />
-              <SelectField label="Flavor Intensity" value={formData.palate.flavorIntensity} options={["Light", "Medium(-)", "Medium", "Medium(+)", "Pronounced"]} onChange={(v) => updateField('palate', 'flavorIntensity', v)} />
-              <SelectField label="Finish" value={formData.palate.finish} options={["Short", "Medium(-)", "Medium", "Medium(+)", "Long"]} onChange={(v) => updateField('palate', 'finish', v)} />
-              <div className="col-span-full">
-                <TagInput label="Flavor Characteristics" tags={formData.palate.flavorCharacteristics} onChange={(tags) => updateField('palate', 'flavorCharacteristics', tags)} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <SelectField label="Sweetness" value={formData.palate.sweetness} options={["Dry", "Off-Dry", "Medium-Dry", "Medium-Sweet", "Sweet", "Luscious"]} onChange={(v) => updateField('palate', 'sweetness', v)} />
+                <SelectField label="Acidity" value={formData.palate.acidity} options={["Low", "Medium(-)", "Medium", "Medium(+)", "High"]} onChange={(v) => updateField('palate', 'acidity', v)} />
+                <SelectField label="Tannin" value={formData.palate.tannin} options={["Low", "Medium(-)", "Medium", "Medium(+)", "High"]} onChange={(v) => updateField('palate', 'tannin', v)} />
+                <SelectField label="Alcohol" value={formData.palate.alcohol} options={["Low", "Medium", "High"]} onChange={(v) => updateField('palate', 'alcohol', v)} />
+                <SelectField label="Body" value={formData.palate.body} options={["Light", "Medium(-)", "Medium", "Medium(+)", "Full"]} onChange={(v) => updateField('palate', 'body', v)} />
+                <SelectField label="Flavor Intensity" value={formData.palate.flavorIntensity} options={["Light", "Medium(-)", "Medium", "Medium(+)", "Pronounced"]} onChange={(v) => updateField('palate', 'flavorIntensity', v)} />
+                <SelectField label="Finish" value={formData.palate.finish} options={["Short", "Medium(-)", "Medium", "Medium(+)", "Long"]} onChange={(v) => updateField('palate', 'finish', v)} />
               </div>
+              
+              {/* Flavor Selection with Picker toggle */}
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-stone-600 dark:text-stone-400">
+                    Flavor Characteristics
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowFlavorPicker(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-vine bg-vine/10 rounded-full hover:bg-vine/20 transition-colors"
+                  >
+                    <Palette size={14} /> Browse All
+                  </button>
+                </div>
+                <TagInput 
+                  label="" 
+                  tags={formData.palate.flavorCharacteristics} 
+                  onChange={(tags) => updateField('palate', 'flavorCharacteristics', tags)} 
+                />
+              </div>
+
+              {/* Flavor Picker Modal */}
+              {showFlavorPicker && (
+                <div className="fixed inset-0 bg-charcoal/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+                  <div className="w-full max-w-md">
+                    <AromaPicker
+                      selectedAromas={formData.palate.flavorCharacteristics}
+                      onChange={(flavors) => updateField('palate', 'flavorCharacteristics', flavors)}
+                      onClose={() => setShowFlavorPicker(false)}
+                    />
+                  </div>
+                </div>
+              )}
            </div>
         );
       case 4:
@@ -433,26 +500,26 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
             />
             
             <div className="mb-4">
-               <label className="block text-sm font-medium text-stone-600 mb-1">Personal Rating (0-100)</label>
+               <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Personal Rating (0-100)</label>
                <input 
                   type="range" 
                   min="50" 
                   max="100" 
                   value={formData.conclusion.personalRating}
                   onChange={(e) => updateField('conclusion', 'personalRating', parseInt(e.target.value))}
-                  className="w-full accent-vermillion h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer"
+                  className="w-full accent-vermillion h-2 bg-stone-200 dark:bg-stone-600 rounded-lg appearance-none cursor-pointer"
                />
-               <div className="text-center font-serif font-bold text-2xl text-charcoal mt-2">
+               <div className="text-center font-serif font-bold text-2xl text-charcoal dark:text-stone-100 mt-2">
                  {formData.conclusion.personalRating}
                </div>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-stone-600 mb-1">Final Notes</label>
+              <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Final Notes</label>
               <textarea 
                 value={formData.conclusion.notes}
                 onChange={e => updateField('conclusion', 'notes', e.target.value)}
-                className="w-full p-2 border border-stone-200 rounded-md h-24"
+                className="w-full p-2 border border-stone-200 dark:border-stone-600 rounded-md h-24 bg-white dark:bg-stone-700 text-charcoal dark:text-stone-100"
                 placeholder="Overall impression..."
               />
             </div>
@@ -463,13 +530,13 @@ export const TastingForm: React.FC<Props> = ({ onSave, onCancel, initialNote }) 
   }
 
   return (
-    <div className="bg-white dark:bg-stone-800 rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[85vh] w-full max-w-2xl mx-auto">
+    <div className="bg-white dark:bg-stone-800 rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] w-full max-w-2xl mx-auto">
       {/* Header */}
-      <div className="bg-charcoal p-4 flex justify-between items-center text-white">
-        <h2 className="font-serif text-lg font-semibold flex items-center gap-2">
+      <div className="bg-charcoal p-4 flex justify-between items-center text-white shrink-0">
+        <h2 className="font-serif text-lg font-semibold flex items-center gap-2 truncate">
           {isEditing ? `Edit: ${formData.name}` : (formData.name || "New Tasting")}
         </h2>
-        <button onClick={onCancel} className="text-stone-400 hover:text-white text-sm">Cancel</button>
+        <button onClick={onCancel} className="text-stone-400 hover:text-white text-sm shrink-0 ml-2">Cancel</button>
       </div>
 
       {/* Progress Bar (Only for Full Mode) */}

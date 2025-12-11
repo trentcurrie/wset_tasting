@@ -8,7 +8,7 @@ import { AdminPage } from './components/AdminPage';
 import { ThemeToggle } from './components/ThemeToggle';
 import { TastingNote } from './types';
 import { useTastings, FilterCategory } from './hooks';
-import { Plus, Search, Filter, Wine, BarChart3, List, Book, LogOut, Shield } from 'lucide-react';
+import { Plus, Search, Filter, Wine, BarChart3, List, Book, LogOut, Shield, MoreHorizontal, X } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 
 enum View {
@@ -24,6 +24,7 @@ enum View {
 function App() {
   const [view, setView] = useState<View>(View.List);
   const [selectedNote, setSelectedNote] = useState<TastingNote | null>(null);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { signOut, user, isAdmin } = useAuth();
   
   // Use the custom hook instead of direct storage operations
@@ -319,7 +320,47 @@ function App() {
         <button onClick={() => setView(View.Reference)} className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-lg transition-all duration-200 active:scale-95 ${view === View.Reference ? 'text-vine bg-stone-800' : 'hover:text-white'}`}>
           <Book size={20} /> Guide
         </button>
+        <button onClick={() => setShowMobileMenu(true)} className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-lg transition-all duration-200 active:scale-95 ${showMobileMenu ? 'text-tangerine bg-stone-800' : 'hover:text-white'}`}>
+          <MoreHorizontal size={20} /> More
+        </button>
       </nav>
+
+      {/* Mobile More Menu Overlay */}
+      {showMobileMenu && (
+        <div className="md:hidden fixed inset-0 z-50 animate-in fade-in duration-200">
+          <div className="absolute inset-0 bg-charcoal/80 backdrop-blur-sm" onClick={() => setShowMobileMenu(false)} />
+          <div className="absolute bottom-0 left-0 right-0 bg-stone-900 rounded-t-2xl p-4 pb-8 animate-in slide-in-from-bottom duration-300">
+            <div className="flex justify-between items-center mb-4 pb-3 border-b border-stone-700">
+              <h3 className="text-white font-medium">Menu</h3>
+              <button onClick={() => setShowMobileMenu(false)} className="text-stone-400 hover:text-white p-1">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-2">
+              {isAdmin && (
+                <button 
+                  onClick={() => { setView(View.Admin); setShowMobileMenu(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${view === View.Admin ? 'bg-stone-800 text-white' : 'text-stone-300 hover:bg-stone-800/50'}`}
+                >
+                  <Shield size={20} className="text-tangerine" /> Admin Panel
+                </button>
+              )}
+              <div className="flex items-center justify-between px-4 py-3 text-stone-300">
+                <span className="flex items-center gap-3">
+                  <span className="w-5 h-5 flex items-center justify-center">🌓</span> Theme
+                </span>
+                <ThemeToggle />
+              </div>
+              <button 
+                onClick={() => { signOut(); setShowMobileMenu(false); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800/50 transition-all duration-200"
+              >
+                <LogOut size={20} /> Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
