@@ -48,22 +48,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
+    // Get initial session with error handling
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
 
-      // Fetch admin status and migrate localStorage data if user just logged in
-      if (session?.user) {
-        fetchAdminStatus(session.user.id);
-        migrateLocalToSupabase(session.user.id).then(count => {
-          if (count > 0) {
-            console.log(`Migrated ${count} tastings from localStorage to Supabase`);
-          }
-        });
-      }
-    });
+        // Fetch admin status and migrate localStorage data if user just logged in
+        if (session?.user) {
+          fetchAdminStatus(session.user.id);
+          migrateLocalToSupabase(session.user.id).then(count => {
+            if (count > 0) {
+              console.log(`Migrated ${count} tastings from localStorage to Supabase`);
+            }
+          });
+        }
+      })
+      .catch(err => {
+        console.warn('Failed to get session, Supabase may be down:', err);
+        setIsLoading(false);
+      });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

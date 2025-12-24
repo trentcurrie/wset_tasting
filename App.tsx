@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TastingForm } from './components/TastingForm';
 import { TastingCard } from './components/TastingCard';
 import { TastingDetail } from './components/TastingDetail';
@@ -8,8 +8,9 @@ import { AdminPage } from './components/AdminPage';
 import { ThemeToggle } from './components/ThemeToggle';
 import { TastingNote } from './types';
 import { useTastings, FilterCategory } from './hooks';
-import { Plus, Search, Filter, Wine, BarChart3, List, Book, LogOut, Shield, MoreHorizontal, X } from 'lucide-react';
+import { Plus, Search, Filter, Wine, BarChart3, List, Book, LogOut, Shield, MoreHorizontal, X, AlertTriangle } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
+import { isSupabaseConfigured, checkSupabaseHealth } from './services/supabase';
 
 enum View {
   List,
@@ -25,7 +26,19 @@ function App() {
   const [view, setView] = useState<View>(View.List);
   const [selectedNote, setSelectedNote] = useState<TastingNote | null>(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [dbHealthy, setDbHealthy] = useState(true);
   const { signOut, user, isAdmin } = useAuth();
+
+  // Check database health on mount and when user changes
+  useEffect(() => {
+    const checkHealth = async () => {
+      if (isSupabaseConfigured()) {
+        const healthy = await checkSupabaseHealth();
+        setDbHealthy(healthy);
+      }
+    };
+    checkHealth();
+  }, [user]);
   
   // Use the custom hook instead of direct storage operations
   const {
@@ -78,6 +91,15 @@ function App() {
 
   return (
     <div className="min-h-screen bg-canvas-warm dark:bg-stone-900 pb-20 md:pb-0 md:pl-64 grid-overlay">
+      {/* Database health warning */}
+      {isSupabaseConfigured() && !dbHealthy && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-tangerine text-charcoal px-4 py-3 md:pl-64">
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <AlertTriangle size={18} />
+            <span>Database connection unavailable. Running in offline mode with local storage only.</span>
+          </div>
+        </div>
+      )}
       
       {/* Desktop Sidebar - Bauhaus-inspired with bold geometric accent */}
       <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-charcoal text-stone-100 z-20">
@@ -180,7 +202,7 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto p-4 md:p-8">
+      <main className={`max-w-5xl mx-auto p-4 md:p-8 ${isSupabaseConfigured() && !dbHealthy ? 'pt-16 md:pt-20' : ''}`}>
         
         {view === View.Add && (
           <div className="fixed inset-0 bg-charcoal/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
